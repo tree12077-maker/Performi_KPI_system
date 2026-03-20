@@ -1,0 +1,426 @@
+<html lang="zh-Hant"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QC Manpower Calculator — 人工 vs 自動化</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800;900&amp;family=Nunito:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+        /* === ZEROVA BRAND THEME === */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-dark: #1B2838;
+            --text-primary: #1B2838;
+            --text-secondary: #4a5568;
+            --text-muted: #8896a7;
+            --accent: #0066B3;
+            --accent-light: rgba(0, 102, 179, 0.08);
+            --grid-color: rgba(0, 102, 179, 0.04);
+            --border-color: #d0dce8;
+            --row-alt: #f4f8fb;
+            --ztm-color: #E67E22;
+            --zcm-color: #2980B9;
+            --phv-color: #27AE60;
+            --font-display: 'Archivo', sans-serif;
+            --font-body: 'Nunito', sans-serif;
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.4rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2vw, 1.4rem);
+            --body-size: clamp(0.75rem, 1.4vw, 1.05rem);
+            --small-size: clamp(0.6rem, 1vw, 0.8rem);
+            --label-size: clamp(0.55rem, 0.9vw, 0.75rem);
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.3rem, 1vw, 0.8rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration: 0.7s;
+        }
+
+        /* === BASE === */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-snap-type: y mandatory; height: 100%; overflow-x: hidden; }
+        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); height: 100%; overflow-x: hidden; }
+
+        /* === SLIDE === */
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            padding: var(--slide-padding);
+            scroll-snap-align: start;
+            display: flex; flex-direction: column;
+            position: relative; overflow: hidden;
+        }
+        .slide::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: clamp(30px, 5vw, 60px) clamp(30px, 5vw, 60px);
+            pointer-events: none; z-index: 0;
+        }
+        .slide > * { position: relative; z-index: 1; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; }
+
+        /* === FIXED UI === */
+        .accent-bar { position: fixed; top: 0; left: 0; width: clamp(4px, 0.4vw, 6px); height: 100%; background: var(--accent); z-index: 100; }
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); z-index: 200; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(0.8rem, 2vw, 1.5rem); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: clamp(6px, 1vh, 10px); z-index: 100; }
+        .nav-dot { width: clamp(6px, 0.8vw, 10px); height: clamp(6px, 0.8vw, 10px); border-radius: 50%; background: var(--border-color); cursor: pointer; transition: all 0.3s ease; border: none; padding: 0; }
+        .nav-dot.active { background: var(--accent); transform: scale(1.3); }
+
+        /* === TYPOGRAPHY === */
+        .top-label { font-family: var(--font-display); font-size: var(--label-size); font-weight: 800; text-transform: uppercase; letter-spacing: 0.3em; color: var(--text-muted); margin-bottom: var(--content-gap); }
+        h1 { font-family: var(--font-display); font-size: var(--title-size); font-weight: 900; color: var(--text-primary); line-height: 0.95; letter-spacing: -0.03em; }
+        h2 { font-family: var(--font-display); font-size: var(--h2-size); font-weight: 900; color: var(--text-primary); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: var(--content-gap); }
+        .accent-text { color: var(--accent); }
+        .factory-ztm { color: var(--ztm-color); }
+        .factory-zcm { color: var(--zcm-color); }
+        .factory-phv { color: var(--phv-color); }
+
+        /* === BOTTOM BAR === */
+        .bottom-bar { display: flex; justify-content: space-between; align-items: flex-end; padding-top: var(--element-gap); }
+        .bottom-bar span { font-family: var(--font-display); font-size: var(--label-size); font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); }
+
+        /* === GEO CIRCLE === */
+        .geo-circle { position: absolute; border: clamp(3px, 0.4vw, 5px) solid var(--text-primary); border-radius: 50%; pointer-events: none; }
+        .geo-circle::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40%; height: 40%; border-radius: 50%; background: conic-gradient(var(--ztm-color) 0deg 120deg, var(--zcm-color) 120deg 240deg, var(--phv-color) 240deg 360deg); }
+
+        /* === TABLE === */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { font-family: var(--font-display); font-weight: 800; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; text-align: left; padding: clamp(0.2rem, 0.5vh, 0.4rem) clamp(0.4rem, 1vw, 0.8rem); border-bottom: 2px solid var(--text-primary); color: var(--text-primary); }
+        .data-table td { padding: clamp(0.15rem, 0.45vh, 0.3rem) clamp(0.4rem, 1vw, 0.8rem); border-bottom: 1px solid var(--border-color); vertical-align: top; font-size: clamp(0.65rem, 1.2vw, 0.95rem); line-height: 1.35; }
+        .data-table tr:nth-child(even) td { background: var(--row-alt); }
+        .data-table .step-num { font-family: var(--font-display); font-weight: 900; color: var(--accent); min-width: 2em; }
+
+        /* === CARDS === */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.4rem, 1.2vw, 0.8rem); }
+        .stat-card { background: var(--bg-primary); border: 1px solid var(--border-color); padding: clamp(0.5rem, 1.2vw, 1rem); position: relative; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent); }
+        .stat-value { font-family: var(--font-display); font-size: clamp(1.2rem, 3vw, 2.5rem); font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: clamp(0.15rem, 0.4vh, 0.3rem); }
+        .stat-label { font-size: var(--small-size); color: var(--text-secondary); font-weight: 600; line-height: 1.3; }
+
+        /* === FEATURE LIST === */
+        .feature-list { list-style: none; display: flex; flex-direction: column; gap: clamp(0.3rem, 0.8vh, 0.6rem); }
+        .feature-list li { font-size: var(--body-size); line-height: 1.5; padding-left: 1.5em; position: relative; color: var(--text-secondary); }
+        .feature-list li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: clamp(6px, 0.8vw, 10px); height: clamp(6px, 0.8vw, 10px); background: var(--accent); }
+        .feature-list li strong { color: var(--text-primary); }
+
+        /* === ARCHITECTURE === */
+        .arch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: clamp(0.3rem, 0.8vw, 0.6rem); }
+        .arch-item { background: var(--bg-primary); border: 1px solid var(--border-color); padding: clamp(0.4rem, 1vw, 0.8rem); }
+        .arch-item .filename { font-family: 'Courier New', monospace; font-weight: 700; font-size: var(--small-size); color: var(--text-primary); margin-bottom: clamp(0.1rem, 0.3vh, 0.3rem); }
+        .arch-item .desc { color: var(--text-secondary); font-size: clamp(0.55rem, 0.9vw, 0.75rem); line-height: 1.3; }
+        .arch-item.main { border-color: var(--accent); border-width: 2px; }
+
+        /* === SCOPE TABLE === */
+        .scope-grid { display: grid; grid-template-columns: auto 1fr; gap: 0; border: 1px solid var(--border-color); }
+        .scope-label, .scope-value { padding: clamp(0.4rem, 1vh, 0.7rem) clamp(0.5rem, 1.2vw, 1rem); border-bottom: 1px solid var(--border-color); font-size: var(--body-size); }
+        .scope-label { font-family: var(--font-display); font-weight: 800; background: var(--row-alt); white-space: nowrap; }
+        .scope-value { color: var(--text-secondary); }
+
+        /* === PIPELINE === */
+        .pipeline { display: flex; align-items: center; gap: clamp(0.3rem, 0.8vw, 0.6rem); flex-wrap: wrap; }
+        .pipe-step { background: var(--accent-light); border: 1px solid var(--accent); padding: clamp(0.2em, 0.5vw, 0.4em) clamp(0.5em, 1vw, 0.8em); font-size: var(--small-size); font-weight: 700; font-family: var(--font-display); white-space: nowrap; }
+        .pipe-arrow { color: var(--text-muted); font-size: var(--small-size); flex-shrink: 0; }
+
+        /* === ANIMATIONS === */
+        .reveal { opacity: 0; transform: translateY(20px); transition: opacity var(--duration) var(--ease-out-expo), transform var(--duration) var(--ease-out-expo); }
+        .reveal-left { opacity: 0; transform: translateX(-30px); transition: opacity var(--duration) var(--ease-out-expo), transform var(--duration) var(--ease-out-expo); }
+        .slide.visible .reveal, .slide.visible .reveal-left { opacity: 1; transform: translate(0); }
+        .slide.visible .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .slide.visible .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .slide.visible .reveal:nth-child(3) { transition-delay: 0.3s; }
+        .slide.visible .reveal:nth-child(4) { transition-delay: 0.4s; }
+
+        /* === RESPONSIVE === */
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.5rem, 5vw, 3rem); --h2-size: clamp(1.2rem, 3vw, 2rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.2rem, 4vw, 2rem); --body-size: clamp(0.65rem, 1.2vw, 0.9rem); } .nav-dots, .decorative { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.6rem, 1vw, 0.8rem); } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.5rem, 8vw, 3rem); } .stats-grid { grid-template-columns: repeat(2, 1fr); } .arch-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; } }
+
+        /* === EDIT MODE === */
+        .edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+        .edit-toggle { position: fixed; top: 12px; left: 16px; background: var(--bg-dark); color: #fff; border: none; border-radius: 4px; padding: 6px 12px; font-family: var(--font-display); font-size: 12px; font-weight: 700; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 10001; }
+        .edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+        .edit-toggle.active { background: var(--accent); }
+        [contenteditable="true"] { outline: 2px dashed var(--accent); outline-offset: 2px; cursor: text; }
+        .edit-save-bar { display: none; position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--bg-dark); color: #fff; padding: 8px 20px; border-radius: 6px; font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 10001; gap: 12px; align-items: center; }
+        .edit-save-bar.show { display: flex; }
+        .edit-save-bar button { background: var(--accent); color: #fff; border: none; padding: 4px 12px; border-radius: 3px; cursor: pointer; font-family: var(--font-display); font-weight: 700; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="accent-bar"></div>
+<div class="progress-bar" id="progressBar" style="width: 28.5714%;"></div>
+<nav class="nav-dots" id="navDots"><button class="nav-dot" aria-label="Slide 1"></button><button class="nav-dot active" aria-label="Slide 2"></button><button class="nav-dot" aria-label="Slide 3"></button><button class="nav-dot" aria-label="Slide 4"></button><button class="nav-dot" aria-label="Slide 5"></button><button class="nav-dot" aria-label="Slide 6"></button><button class="nav-dot" aria-label="Slide 7"></button></nav>
+<div class="edit-hotzone"></div>
+<button class="edit-toggle show active" id="editToggle">Edit Mode</button>
+<div class="edit-save-bar show" id="editSaveBar">
+    <span>Edit mode active</span>
+    <button onclick="editor.saveToFile()">Save file</button>
+    <button onclick="editor.toggleEditMode()">Exit</button>
+</div>
+
+<!-- ========== SLIDE 1 / 7 : TITLE ========== -->
+<section class="slide visible" data-slide="0">
+    <div class="top-label reveal-left" contenteditable="true">ZEROVA — QC Automation</div>
+    <div class="slide-content">
+        <h1 class="reveal" style="margin-bottom: var(--content-gap);" contenteditable="true">QC<br>Man<span class="accent-text">power</span><br>Calculator</h1>
+        <p class="reveal" style="font-size: var(--h3-size); color: var(--text-secondary); max-width: min(60%, 500px);" contenteditable="true">人工操作 vs 自動化的效率比較分析</p>
+    </div>
+    <div class="geo-circle decorative" style="right: clamp(3rem, 8vw, 8rem); top: 50%; transform: translateY(-50%); width: clamp(100px, 18vw, 250px); height: clamp(100px, 18vw, 250px);"></div>
+    <div class="bottom-bar reveal"><span contenteditable="true">Internal Report 2026</span><span contenteditable="true">01 / 07</span></div>
+</section>
+
+<!-- ========== SLIDE 2 / 7 : OVERVIEW ========== -->
+<section class="slide visible" data-slide="1">
+    <div class="top-label reveal-left" contenteditable="true">Overview</div>
+    <div class="slide-content">
+        <h2 class="reveal" contenteditable="true">專案<span class="accent-text">總覽</span></h2>
+        <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: var(--content-gap); max-width: min(80%, 700px);" contenteditable="true">為 ZEROVA（馳諾瓦）全球品管單位打造的自動化工具，用於計算三座工廠的品管人力需求。</p>
+        <div class="scope-grid reveal" style="max-width: min(90%, 750px);">
+            <div class="scope-label" contenteditable="true">工廠</div>
+            <div class="scope-value" contenteditable="true"><strong class="factory-ztm">ZTM</strong>（台灣）、<strong class="factory-zcm">ZCM</strong>（中國）、<strong class="factory-phv">PHV</strong>（越南）</div>
+            <div class="scope-label" contenteditable="true">品管角色</div>
+            <div class="scope-value" contenteditable="true">IQC（進料）、IPQC（製程）、OQC（出貨）</div>
+            <div class="scope-label" contenteditable="true">產品類型</div>
+            <div class="scope-value" contenteditable="true">DC / AC，各有不同工時標準</div>
+            <div class="scope-label" contenteditable="true">資料來源</div>
+            <div class="scope-value" contenteditable="true">生產計劃 PDF + 招募進度 Excel</div>
+            <div class="scope-label" contenteditable="true">輸出</div>
+            <div class="scope-value" contenteditable="true">Excel 報表、PPT 簡報、Email 缺口預警</div>
+        </div>
+    </div>
+    <div class="bottom-bar reveal"><span contenteditable="true">QC Manpower Calculator</span><span contenteditable="true">02 / 07</span></div>
+</section>
+
+<!-- ========== SLIDE 3 / 7 : ARCHITECTURE ========== -->
+<section class="slide visible" data-slide="2">
+    <div class="top-label reveal-left" contenteditable="true">Architecture</div>
+    <div class="slide-content">
+        <h2 class="reveal" contenteditable="true">系統<span class="accent-text">架構</span></h2>
+        <div class="arch-grid reveal" style="max-width: min(95%, 900px);">
+            <div class="arch-item main"><div class="filename" contenteditable="true">main.py</div><div class="desc" contenteditable="true">主程式（6 步驟流水線）</div></div>
+            <div class="arch-item main"><div class="filename" contenteditable="true">config.py</div><div class="desc" contenteditable="true">工時標準、工廠清單、收件人</div></div>
+            <div class="arch-item"><div class="filename" contenteditable="true">pdf_parser.py</div><div class="desc" contenteditable="true">PDF 解析 + OCR</div></div>
+            <div class="arch-item"><div class="filename" contenteditable="true">calculator.py</div><div class="desc" contenteditable="true">IQC / IPQC / OQC 人力公式</div></div>
+            <div class="arch-item"><div class="filename" contenteditable="true">hr_reader.py</div><div class="desc" contenteditable="true">Excel 實際在職人數</div></div>
+            <div class="arch-item"><div class="filename" contenteditable="true">excel_writer.py</div><div class="desc" contenteditable="true">Excel 報表（9 sheets）</div></div>
+            <div class="arch-item"><div class="filename" contenteditable="true">ppt_writer.py</div><div class="desc" contenteditable="true">PPT 簡報（9 slides）</div></div>
+            <div class="arch-item"><div class="filename" contenteditable="true">email_sender.py</div><div class="desc" contenteditable="true">自動寄信 + 缺口分析</div></div>
+        </div>
+    </div>
+    <div class="bottom-bar reveal"><span contenteditable="true">QC Manpower Calculator</span><span contenteditable="true">03 / 07</span></div>
+</section>
+
+<!-- ========== SLIDE 4 / 7 : COMPARISON ========== -->
+<section class="slide" data-slide="3">
+    <div class="top-label reveal-left" contenteditable="true">Comparison</div>
+    <div class="slide-content">
+        <h2 class="reveal" contenteditable="true">流程<span class="accent-text">對比</span></h2>
+        <table class="data-table reveal" style="max-width: min(95%, 900px);">
+            <thead><tr><th style="width:2.5em;"></th><th>人工操作</th><th>自動化</th></tr></thead>
+            <tbody>
+                <tr><td class="step-num" contenteditable="true">01</td><td contenteditable="true">打開 PDF，逐頁找各廠 DC/AC 表格</td><td contenteditable="true"><strong>find_latest_pdf()</strong> 自動找最新 PDF</td></tr>
+                <tr><td class="step-num" contenteditable="true">02</td><td contenteditable="true">肉眼抄錄 12 個月數字，ZTM 圖片需辨認</td><td contenteditable="true"><strong>pdf_parser</strong> 文字解析 + Tesseract OCR</td></tr>
+                <tr><td class="step-num" contenteditable="true">03</td><td contenteditable="true">套公式 108 次 (3 角色 × 3 廠 × 12 月)</td><td contenteditable="true"><strong>calculator.py</strong> 一次算完，含 ceil + 最低 1 人</td></tr>
+                <tr><td class="step-num" contenteditable="true">04</td><td contenteditable="true">開 Excel → 找招募進度 → 抄人數</td><td contenteditable="true"><strong>hr_reader.py</strong> 自動定位最新週 + 各月資料</td></tr>
+                <tr><td class="step-num" contenteditable="true">05</td><td contenteditable="true">逐一比對「實際 − 需求」，手動標色</td><td contenteditable="true">自動計算差異、套色、產生<strong>預警清單</strong></td></tr>
+                <tr><td class="step-num" contenteditable="true">06</td><td contenteditable="true">手動建 9 個 sheet、調格式、做圖表</td><td contenteditable="true"><strong>excel_writer.py</strong> 自動產生 9 sheets + 圖表</td></tr>
+                <tr><td class="step-num" contenteditable="true">07</td><td contenteditable="true">手動建 9 頁投影片、插表格圖表</td><td contenteditable="true"><strong>ppt_writer.py</strong> 自動產生 9 slides</td></tr>
+                <tr><td class="step-num" contenteditable="true">08</td><td contenteditable="true">手動寫信、整理分析、附檔、寄出</td><td contenteditable="true"><strong>email_sender.py</strong> HTML 缺口表 + 附件寄出</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="bottom-bar reveal"><span contenteditable="true">QC Manpower Calculator</span><span contenteditable="true">04 / 07</span></div>
+</section>
+
+<!-- ========== SLIDE 5 / 7 : EFFICIENCY ========== -->
+<section class="slide" data-slide="4">
+    <div class="top-label reveal-left" contenteditable="true">Efficiency</div>
+    <div class="slide-content">
+        <h2 class="reveal" contenteditable="true">效率<span class="accent-text">對比</span></h2>
+        <div class="stats-grid reveal" style="max-width: min(95%, 900px);">
+            <div class="stat-card"><div class="stat-value" contenteditable="true">240x</div><div class="stat-label" contenteditable="true">速度提升<br>2-3hr → 30s</div></div>
+            <div class="stat-card"><div class="stat-value" contenteditable="true">0</div><div class="stat-label" contenteditable="true">計算錯誤<br>程式 + 測試</div></div>
+            <div class="stat-card"><div class="stat-value" contenteditable="true">100%</div><div class="stat-label" contenteditable="true">格式一致<br>統一樣式字型</div></div>
+            <div class="stat-card"><div class="stat-value" contenteditable="true">OCR</div><div class="stat-label" contenteditable="true">免人工辨識<br>Tesseract</div></div>
+            <div class="stat-card"><div class="stat-value" contenteditable="true">Auto</div><div class="stat-label" contenteditable="true">缺口預警<br>自動標色</div></div>
+            <div class="stat-card"><div class="stat-value" contenteditable="true">6</div><div class="stat-label" contenteditable="true">一鍵通知<br>自動寄信</div></div>
+        </div>
+    </div>
+    <div class="bottom-bar reveal"><span contenteditable="true">QC Manpower Calculator</span><span contenteditable="true">05 / 07</span></div>
+</section>
+
+<!-- ========== SLIDE 6 / 7 : EXTRA VALUE ========== -->
+<section class="slide" data-slide="5">
+    <div class="top-label reveal-left" contenteditable="true">Extra Value</div>
+    <div class="slide-content">
+        <h2 class="reveal" contenteditable="true">額外<span class="accent-text">價值</span></h2>
+        <ul class="feature-list reveal" style="max-width: min(90%, 750px);">
+            <li contenteditable="true"><strong>歷史追蹤</strong> — 各月最後一週實際人數，分析更精準</li>
+            <li contenteditable="true"><strong>視覺化圖表</strong> — 堆疊柱狀圖 + 折線圖（雙 Y 軸）</li>
+            <li contenteditable="true"><strong>工廠色彩</strong> — <strong class="factory-ztm">ZTM</strong>、<strong class="factory-zcm">ZCM</strong>、<strong class="factory-phv">PHV</strong> 跨報表一致辨識</li>
+            <li contenteditable="true"><strong>參數可調</strong> — 修改 config.py 即可更新工時或產能</li>
+            <li contenteditable="true"><strong>可重現</strong> — 任何人執行都得到相同結果</li>
+        </ul>
+    </div>
+    <div class="bottom-bar reveal"><span contenteditable="true">QC Manpower Calculator</span><span contenteditable="true">06 / 07</span></div>
+</section>
+
+<!-- ========== SLIDE 7 / 7 : EXECUTION + CLOSING ========== -->
+<section class="slide" data-slide="6">
+    <div class="top-label reveal-left" contenteditable="true">Execution &amp; Summary</div>
+    <div class="slide-content" style="align-items: center; text-align: center;">
+        <h2 class="reveal" contenteditable="true">一行指令<span class="accent-text">全自動</span></h2>
+        <div class="reveal" style="background: var(--bg-dark); color: #e0e0e0; padding: clamp(0.6rem, 1.5vw, 1.2rem); font-family: 'Courier New', monospace; font-size: var(--body-size); line-height: 1.8; max-width: min(90%, 750px); margin-bottom: var(--element-gap);">
+            <span style="color: #8896a7;">$</span> python main.py
+        </div>
+        <div class="reveal pipeline" style="max-width: min(90%, 750px); margin-bottom: var(--content-gap); justify-content: center;">
+            <span class="pipe-step">1. PDF</span>
+            <span class="pipe-arrow">→</span>
+            <span class="pipe-step">2. 計算</span>
+            <span class="pipe-arrow">→</span>
+            <span class="pipe-step">3. HR</span>
+            <span class="pipe-arrow">→</span>
+            <span class="pipe-step">4. Excel</span>
+            <span class="pipe-arrow">→</span>
+            <span class="pipe-step">5. PPT</span>
+            <span class="pipe-arrow">→</span>
+            <span class="pipe-step">6. Email</span>
+        </div>
+        <h1 class="reveal" style="margin-bottom: var(--element-gap);" contenteditable="true"><span class="accent-text">30</span> 秒</h1>
+        <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); max-width: min(70%, 600px);" contenteditable="true">取代 2-3 小時的人工作業 — 零錯誤、格式一致、自動通知</p>
+        <div class="reveal" style="margin-top: var(--element-gap); font-size: var(--small-size); color: var(--text-muted);">github.com/tree12077-maker/qc-manpower-calculator</div>
+    </div>
+    <div class="geo-circle decorative" style="left: clamp(2rem, 5vw, 5rem); bottom: clamp(2rem, 5vh, 4rem); width: clamp(50px, 8vw, 120px); height: clamp(50px, 8vw, 120px);"></div>
+    <div class="bottom-bar reveal"><span contenteditable="true">ZEROVA — QC Automation</span><span contenteditable="true">07 / 07</span></div>
+</section>
+
+<script>
+/* === SLIDE CONTROLLER === */
+class SlidePresentation {
+    constructor() {
+        this.slides = document.querySelectorAll('.slide');
+        this.currentSlide = 0;
+        this.totalSlides = this.slides.length;
+        this.createNavDots();
+        this.setupObserver();
+        this.setupKeyboard();
+        this.setupWheel();
+        this.setupTouch();
+        this.updateProgress();
+    }
+    createNavDots() {
+        const nav = document.getElementById('navDots');
+        this.slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+            dot.addEventListener('click', () => this.goToSlide(i));
+            nav.appendChild(dot);
+        });
+        this.dots = nav.querySelectorAll('.nav-dot');
+    }
+    setupObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    const idx = parseInt(entry.target.dataset.slide);
+                    this.currentSlide = idx;
+                    this.updateDots();
+                    this.updateProgress();
+                }
+            });
+        }, { threshold: 0.5 });
+        this.slides.forEach(s => observer.observe(s));
+    }
+    setupKeyboard() {
+        document.addEventListener('keydown', (e) => {
+            if (e.target.getAttribute('contenteditable') === 'true') return;
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); this.next(); }
+            else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); this.prev(); }
+        });
+    }
+    setupWheel() {
+        let last = 0;
+        document.addEventListener('wheel', (e) => {
+            const now = Date.now();
+            if (now - last < 800) return;
+            last = now;
+            if (e.deltaY > 0) this.next(); else if (e.deltaY < 0) this.prev();
+        }, { passive: true });
+    }
+    setupTouch() {
+        let startY = 0;
+        document.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', (e) => {
+            const diff = startY - e.changedTouches[0].clientY;
+            if (Math.abs(diff) > 50) { if (diff > 0) this.next(); else this.prev(); }
+        }, { passive: true });
+    }
+    goToSlide(idx) { if (idx >= 0 && idx < this.totalSlides) this.slides[idx].scrollIntoView({ behavior: 'smooth' }); }
+    next() { this.goToSlide(this.currentSlide + 1); }
+    prev() { this.goToSlide(this.currentSlide - 1); }
+    updateDots() { this.dots.forEach((d, i) => d.classList.toggle('active', i === this.currentSlide)); }
+    updateProgress() { document.getElementById('progressBar').style.width = ((this.currentSlide + 1) / this.totalSlides * 100) + '%'; }
+}
+
+/* === INLINE EDITOR === */
+class InlineEditor {
+    constructor() {
+        this.isActive = false;
+        this.editables = document.querySelectorAll('h1, h2, p, td, li, .stat-value, .stat-label, .desc, .filename, .scope-label, .scope-value, .top-label, .bottom-bar span');
+        this.storageKey = 'qc-manpower-v3';
+        this.loadEdits();
+    }
+    toggleEditMode() {
+        this.isActive = !this.isActive;
+        document.getElementById('editToggle').classList.toggle('active', this.isActive);
+        document.getElementById('editSaveBar').classList.toggle('show', this.isActive);
+        this.editables.forEach(el => { el.contentEditable = this.isActive ? 'true' : 'false'; });
+        if (!this.isActive) this.saveEdits();
+    }
+    saveEdits() {
+        const edits = {};
+        this.editables.forEach((el, i) => { edits[i] = el.innerHTML; });
+        localStorage.setItem(this.storageKey, JSON.stringify(edits));
+    }
+    loadEdits() {
+        const saved = localStorage.getItem(this.storageKey);
+        if (!saved) return;
+        try {
+            const edits = JSON.parse(saved);
+            this.editables.forEach((el, i) => { if (edits[i] !== undefined) el.innerHTML = edits[i]; });
+        } catch (e) {}
+    }
+    saveToFile() {
+        this.saveEdits();
+        const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'presentation.html';
+        a.click();
+    }
+}
+
+/* === INIT === */
+const presentation = new SlidePresentation();
+const editor = new InlineEditor();
+
+const hotzone = document.querySelector('.edit-hotzone');
+const editToggle = document.getElementById('editToggle');
+let hideTimeout = null;
+hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); editToggle.classList.add('show'); });
+hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editToggle.classList.remove('show'); }, 400); });
+editToggle.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); });
+editToggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editToggle.classList.remove('show'); }, 400); });
+hotzone.addEventListener('click', () => editor.toggleEditMode());
+editToggle.addEventListener('click', () => editor.toggleEditMode());
+document.addEventListener('keydown', (e) => {
+    if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable')) editor.toggleEditMode();
+    if (e.ctrlKey && e.key === 's') { e.preventDefault(); if (editor.isActive) editor.saveToFile(); }
+});
+</script>
+
+</body></html>
