@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Performi Layout 介紹頁</title>
+  <style>
+    :root{
+      --bg1:#eef8fb;
+      --bg2:#f8fcff;
+      --primary:#0f8ea3;
+      --primary2:#19b6b0;
+      --text:#17324a;
+      --muted:#607286;
+      --card:rgba(255,255,255,.78);
+      --border:rgba(18,119,142,.12);
+      --shadow:0 16px 40px rgba(22,47,76,.08);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Segoe UI","Noto Sans TC",Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 0% 0%, #dff8ff 0, transparent 28%),
+        radial-gradient(circle at 100% 0%, #e8fff7 0, transparent 25%),
+        linear-gradient(135deg,var(--bg1),var(--bg2));
+      line-height:1.75;
+    }
+    .wrap{max-width:1180px;margin:0 auto;padding:38px 20px 70px}
+    .hero{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:24px;
+      align-items:stretch;
+      margin-bottom:24px;
+    }
+    .card{
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .hero-main{padding:34px 34px 28px}
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(25,182,176,.11);
+      color:#0f7b88;
+      font-weight:700;
+      font-size:14px;
+      margin-bottom:14px;
+    }
+    h1{
+      font-size:clamp(34px,5vw,54px);
+      line-height:1.08;
+      margin:0 0 14px;
+      letter-spacing:-1.3px;
+    }
+    .lead{
+      font-size:18px;
+      color:var(--muted);
+      margin:0 0 18px;
+    }
+    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .chip{
+      padding:9px 14px;
+      background:#fff;
+      border:1px solid rgba(23,50,74,.08);
+      border-radius:999px;
+      font-size:14px;
+      font-weight:600;
+      color:#29516d;
+    }
+    .hero-side{padding:24px}
+    .mini-panel{
+      background:linear-gradient(180deg,#ffffff,#f7fcfd);
+      border:1px solid rgba(23,50,74,.08);
+      border-radius:20px;
+      padding:20px;
+      height:100%;
+    }
+    .mini-title{
+      font-size:15px;
+      font-weight:800;
+      color:#1d4563;
+      margin:0 0 14px;
+    }
+    .flow{
+      display:grid;
+      gap:10px;
+    }
+    .flow-step{
+      padding:12px 14px;
+      border-radius:16px;
+      background:linear-gradient(135deg,#eefbfd,#f7fffd);
+      border:1px solid rgba(25,182,176,.16);
+      font-weight:700;
+      color:#24506e;
+      position:relative;
+    }
+    .flow-step:not(:last-child)::after{
+      content:"↓";
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:-16px;
+      color:#7ea8b0;
+      font-weight:800;
+    }
+    .section{margin-top:22px}
+    .section-header{
+      margin:0 0 14px;
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:16px;
+    }
+    .section-header h2{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-.5px;
+    }
+    .section-header p{
+      margin:0;
+      color:var(--muted);
+      max-width:700px;
+    }
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .panel{padding:26px}
+    .feature{
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(23,50,74,.08);
+      border-radius:20px;
+      padding:20px;
+      height:100%;
+    }
+    .feature h3{
+      margin:0 0 10px;
+      font-size:18px;
+    }
+    .feature p{margin:0;color:var(--muted)}
+    .icon{
+      width:42px;height:42px;border-radius:14px;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#dff8ff,#e7fff4);
+      font-size:20px;margin-bottom:12px;
+    }
+    .list{
+      margin:0;padding-left:18px;color:var(--muted)
+    }
+    .list li{margin:8px 0}
+    .role-boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:10px}
+    .role{
+      background:#fff;border:1px solid rgba(23,50,74,.08);
+      border-radius:20px;padding:18px;
+    }
+    .role .name{font-weight:800;margin-bottom:8px}
+    .role .tag{
+      display:inline-block;padding:5px 10px;border-radius:999px;
+      font-size:12px;font-weight:800;margin-bottom:10px;
+      background:rgba(15,142,163,.10);color:#0f7b88;
+    }
+    .timeline{
+      margin-top:8px;
+      border-left:2px solid rgba(15,142,163,.18);
+      padding-left:16px;
+    }
+    .timeline .item{
+      position:relative;
+      padding:6px 0 10px;
+      color:#38566f;
+      font-weight:600;
+    }
+    .timeline .item::before{
+      content:"";
+      width:10px;height:10px;border-radius:50%;
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      position:absolute;left:-22px;top:14px;
+      box-shadow:0 0 0 4px rgba(25,182,176,.10);
+    }
+    .footer-note{
+      margin-top:22px;
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+    }
+    @media (max-width:960px){
+      .hero,.grid-2,.grid-3,.role-boxes{grid-template-columns:1fr}
+      .wrap{padding:24px 14px 56px}
+      .hero-main,.hero-side,.panel{padding:22px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="card hero-main">
+        <div class="eyebrow">🎨 Performi Layout</div>
+        <h1>企業級後台管理系統<br>共用版型元件</h1>
+        <p class="lead">
+          Performi Layout 是後台系統的核心入口框架，整合 <strong>導航、權限控制、多語系與響應式體驗</strong>，
+          讓各功能頁面在一致的 UI / UX 架構下運作，同時確保不同角色只看到對應權限內容。
+        </p>
+        <div class="chips">
+          <span class="chip">Sidebar Navigation</span>
+          <span class="chip">RBAC + Page-level Control</span>
+          <span class="chip">i18n</span>
+          <span class="chip">Responsive UI</span>
+          <span class="chip">Scalable Architecture</span>
+        </div>
+      </div>
+      <div class="card hero-side">
+        <div class="mini-panel">
+          <p class="mini-title">🏗 系統架構流程</p>
+          <div class="flow">
+            <div class="flow-step">User Login</div>
+            <div class="flow-step">User.me()</div>
+            <div class="flow-step">Role / Position / Profile</div>
+            <div class="flow-step">PageAccessConfig</div>
+            <div class="flow-step">Navigation Generation</div>
+            <div class="flow-step">Sidebar Rendering</div>
+            <div class="flow-step">Main Content</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <h2>📌 專案簡介</h2>
+          <p>本元件負責整體後台介面的結構與使用者操作體驗，是 Performi 系統所有模組的共用版型基礎。</p>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="feature card">
+          <div class="icon">🧭</div>
+          <h3>統一導覽體驗</h3>
+          <p>提供一致的 Sidebar 與頁面框架，讓儀表板、設定頁與管理頁能在同一介面語言中運作。</p>
+        </div>
+        <div class="feature card">
+          <div class="icon">🔐</div>
+          <h3>權限導向顯示</h3>
+          <p>依角色與個別頁面權限，動態控制功能區塊與選單顯示，避免未授權頁面暴露。</p>
+        </div>
+        <div class="feature card">
+          <div class="icon">🌍</div>
+          <h3>多語與跨裝置</h3>
+          <p>支援中英文切換與桌機 / 手機自適應排版，適合跨廠區與多角色的企業內部環境。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid-2">
+      <div class="card panel">
+        <div class="section-header">
+          <div>
+            <h2>🎯 設計目的</h2>
+            <p>後台版型不只是畫面容器，而是整合導覽、權限與語系能力的核心介面層。</p>
+          </div>
+        </div>
+        <ul class="list">
+          <li><strong>統一導航體驗：</strong>所有頁面使用一致的側邊欄與版面結構</li>
+          <li><strong>角色權限管理：</strong>支援 RBAC + Page-level Control 雙層模式</li>
+          <li><strong>多語系支援：</strong>中英文切換，文字排版可隨語系動態調整</li>
+          <li><strong>響應式設計：</strong>桌機與手機皆保有完整可用性</li>
+          <li><strong>模組化擴充：</strong>新功能頁面可快速接入既有架構</li>
+        </ul>
+      </div>
+
+      <div class="card panel">
+        <div class="section-header">
+          <div>
+            <h2>🧩 核心功能</h2>
+            <p>從登入、載入、權限判斷到畫面呈現，完整封裝為可重用的後台框架。</p>
+          </div>
+        </div>
+        <ul class="list">
+          <li><strong>使用者資料載入：</strong>自動讀取姓名、Email、部門、職位與角色</li>
+          <li><strong>動態選單：</strong>General / Team / Admin 三層導覽結構</li>
+          <li><strong>多語系支援：</strong>LanguageProvider + LanguageSwitcher</li>
+          <li><strong>響應式 Sidebar：</strong>Desktop 完整顯示，Mobile 可收合</li>
+          <li><strong>使用者選單：</strong>顯示身份、管理員標記與安全登出機制</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section card panel">
+      <div class="section-header">
+        <div>
+          <h2>🔐 權限控制邏輯</h2>
+          <p>採用「角色 + 個別頁面權限」雙層控制模型，兼顧簡潔性與擴充性。</p>
+        </div>
+      </div>
+      <div class="role-boxes">
+        <div class="role">
+          <div class="tag">Role-based</div>
+          <div class="name">admin</div>
+          <div>可看到全部頁面與管理功能。</div>
+        </div>
+        <div class="role">
+          <div class="tag">Role-based</div>
+          <div class="name">管理職</div>
+          <div>可看到 Team 區塊與團隊管理相關功能。</div>
+        </div>
+        <div class="role">
+          <div class="tag">Page-level</div>
+          <div class="name">一般使用者</div>
+          <div>僅可看到一般功能，部分頁面需額外檢查 PageAccessConfig。</div>
+        </div>
+      </div>
+      <ul class="list" style="margin-top:14px">
+        <li>若非 <strong>admin</strong>，系統會額外查詢 <strong>PageAccessConfig</strong></li>
+        <li>目前控管頁面包含：<strong>BatchKpiUpdate</strong>、<strong>ProductionEfficiency</strong></li>
+        <li>只有設定為啟用狀態時，使用者才會看到對應功能頁</li>
+      </ul>
+    </section>
+
+    <section class="section grid-2">
+      <div class="card panel">
+        <div class="section-header">
+          <div>
+            <h2>🚀 適用場景</h2>
+            <p>適合需要多角色管理、權限分流與數據導覽的企業內部系統。</p>
+          </div>
+        </div>
+        <ul class="list">
+          <li>KPI 管理系統</li>
+          <li>部門績效平台</li>
+          <li>人才 / 組織管理後台</li>
+          <li>QA / 製造數據平台</li>
+          <li>多角色企業內部管理系統</li>
+        </ul>
+      </div>
+      <div class="card panel">
+        <div class="section-header">
+          <div>
+            <h2>📈 專案價值</h2>
+            <p>讓後台不只是能用，而是能持續擴充、維護與治理。</p>
+          </div>
+        </div>
+        <ul class="list">
+          <li>提升整體系統一致性與維護性</li>
+          <li>降低新頁面接入與開發成本</li>
+          <li>強化權限管理與使用安全</li>
+          <li>提升跨語系與跨裝置可用性</li>
+          <li>建立可持續擴充的企業後台架構</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section grid-2">
+      <div class="card panel">
+        <div class="section-header">
+          <div>
+            <h2>🧠 系統思維</h2>
+            <p>這不只是 UI Layout，而是 Performi 的介面治理層。</p>
+          </div>
+        </div>
+        <ul class="list">
+          <li>導覽邏輯（Navigation）</li>
+          <li>權限邏輯（Access Control）</li>
+          <li>語系邏輯（Localization）</li>
+          <li>使用者狀態管理（User State）</li>
+          <li>桌機 / 行動版體驗（Responsive UI）</li>
+        </ul>
+      </div>
+      <div class="card panel">
+        <div class="section-header">
+          <div>
+            <h2>🔮 未來可擴充方向</h2>
+            <p>保留足夠彈性，支援更多企業級功能延伸。</p>
+          </div>
+        </div>
+        <ul class="list">
+          <li>Sidebar 摺疊 / 展開模式</li>
+          <li>使用者頭像與個人設定頁</li>
+          <li>Breadcrumb 導覽</li>
+          <li>通知中心整合</li>
+          <li>Dark Mode</li>
+          <li>更細緻的權限群組管理</li>
+          <li>最近常用頁面 / 收藏頁面功能</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section card panel">
+      <div class="section-header">
+        <div>
+          <h2>👨‍💻 作者說明</h2>
+          <p>此 Layout 為 Performi 系統基礎架構元件，用於支援多角色、多語系、多模組的企業內部平台穩定運作。</p>
+        </div>
+      </div>
+      <div class="timeline">
+        <div class="item">作為整個系統的入口框架，統一各模組頁面的導覽與互動體驗</div>
+        <div class="item">支援 KPI、組織管理、數據分析、權限控制等內部管理場景</div>
+        <div class="item">可作為企業後台平台的共用 Layout 最佳實務模板</div>
+      </div>
+    </section>
+
+    <div class="footer-note">Performi Layout Introduction Page</div>
+  </div>
+</body>
+</html>
