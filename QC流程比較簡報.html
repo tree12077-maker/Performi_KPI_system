@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>品保三廠費用分析 — 人工 vs 自動化流程比較</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #1a73e8;
+    --primary-dark: #0d47a1;
+    --accent: #00c853;
+    --danger: #e53935;
+    --bg-dark: #0f172a;
+    --bg-card: rgba(255,255,255,0.06);
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --gradient-accent: linear-gradient(135deg, #00c853 0%, #69f0ae 100%);
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ===== Slide System ===== */
+  .slide {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    background:
+      radial-gradient(ellipse at 20% 50%, #667eea 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, #764ba2 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .slide-inner {
+    max-width: 1100px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== Slide Counter ===== */
+  .slide-num {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ===== Typography ===== */
+  .slide-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+  .slide-title .highlight {
+    background: var(--gradient-3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .slide-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+
+  /* ===== Cover (Slide 1) ===== */
+  .cover { text-align: center; }
+  .cover .slide-title { font-size: 3.4rem; margin-bottom: 1rem; }
+  .cover .badge {
+    display: inline-block;
+    background: var(--gradient-accent);
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.35rem 1.2rem;
+    border-radius: 999px;
+    margin-bottom: 1.8rem;
+    letter-spacing: 0.05em;
+  }
+  .cover .meta {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-top: 2rem;
+  }
+
+  /* ===== Comparison Grid (Slide 2) ===== */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  .compare-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 1rem;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .compare-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+  .compare-card.manual { border-top: 3px solid #e53935; }
+  .compare-card.auto   { border-top: 3px solid #00c853; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .card-icon {
+    width: 42px; height: 42px;
+    border-radius: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+  }
+  .manual .card-icon { background: rgba(229,57,53,0.15); }
+  .auto   .card-icon { background: rgba(0,200,83,0.15); }
+  .card-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .step-list { list-style: none; }
+  .step-list li {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+  }
+  .step-list li:last-child { border-bottom: none; }
+  .step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .manual .step-num { background: rgba(229,57,53,0.2); color: #ef9a9a; }
+  .auto   .step-num { background: rgba(0,200,83,0.2); color: #a5d6a7; }
+
+  /* ===== Time Bars (Slide 3) ===== */
+  .time-table { width: 100%; border-collapse: separate; border-spacing: 0 0.6rem; }
+  .time-table th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem 0.5rem;
+  }
+  .time-table td {
+    padding: 0.9rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.95rem;
+  }
+  .time-table tr td:first-child {
+    border-radius: 0.6rem 0 0 0.6rem;
+    font-weight: 500;
+    width: 22%;
+  }
+  .time-table tr td:last-child { border-radius: 0 0.6rem 0.6rem 0; }
+
+  .bar-cell { position: relative; }
+  .bar {
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+    min-width: 60px;
+    transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .bar.manual-bar { background: linear-gradient(90deg, #e53935, #ef5350); }
+  .bar.auto-bar   { background: linear-gradient(90deg, #00c853, #69f0ae); color: #0f172a; }
+
+  .time-val {
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: right;
+    width: 80px;
+  }
+  .time-val.saved { color: #69f0ae; }
+
+  /* ===== KPI Cards (Slide 4) ===== */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .kpi-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 1rem;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s;
+  }
+  .kpi-card:hover { transform: scale(1.04); }
+  .kpi-value {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .kpi-value.green { background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .kpi-value.blue  { background: var(--gradient-3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .kpi-value.pink  { background: var(--gradient-2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .kpi-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .benefit-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .benefit-item {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 0.75rem;
+    padding: 1.2rem 1.4rem;
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+  }
+  .benefit-icon {
+    flex-shrink: 0;
+    font-size: 1.2rem;
+    margin-top: 0.1rem;
+  }
+  .benefit-item strong { color: var(--text); }
+
+  /* ===== CTA (Slide 5) ===== */
+  .cta-slide { text-align: center; }
+  .cta-slide .slide-title { font-size: 2.6rem; margin-bottom: 1.2rem; }
+  .cta-cmd {
+    display: inline-block;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 0.6rem;
+    padding: 1rem 2rem;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 1rem;
+    color: #69f0ae;
+    margin: 1.5rem 0;
+    letter-spacing: 0.02em;
+  }
+  .cta-cmd .prompt { color: var(--text-muted); }
+
+  .arch-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 2.5rem 0 1rem;
+    flex-wrap: wrap;
+  }
+  .arch-node {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 0.6rem;
+    padding: 0.65rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .arch-arrow { color: var(--text-muted); font-size: 1.2rem; }
+
+  /* ===== Animations ===== */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .delay-1 { transition-delay: 0.15s; }
+  .delay-2 { transition-delay: 0.3s; }
+  .delay-3 { transition-delay: 0.45s; }
+  .delay-4 { transition-delay: 0.6s; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .compare-grid, .kpi-row, .benefit-list { grid-template-columns: 1fr; }
+    .slide-title { font-size: 2rem; }
+    .cover .slide-title { font-size: 2.4rem; }
+    .slide { padding: 3rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== SLIDE 1: Cover ========== -->
+<section class="slide cover" id="slide-1">
+  <div class="slide-inner">
+    <div class="badge fade-up">ZEROVA Quality Control</div>
+    <h1 class="slide-title fade-up delay-1">
+      品保三廠費用分析<br><span class="highlight">人工 vs 自動化</span>
+    </h1>
+    <p class="slide-subtitle fade-up delay-2">
+      從 Excel 手動彙整到一鍵產出報表 — 流程時間精簡分析
+    </p>
+    <p class="meta fade-up delay-3">
+      GQA / DQA / ZTM / ZCM / PHV &nbsp;&bull;&nbsp; 2026 年 3 月
+    </p>
+  </div>
+  <span class="slide-num">1 / 5</span>
+</section>
+
+<!-- ========== SLIDE 2: Process Comparison ========== -->
+<section class="slide" id="slide-2">
+  <div class="slide-inner">
+    <h2 class="slide-title fade-up">流程步驟 <span class="highlight">對比</span></h2>
+    <p class="slide-subtitle fade-up delay-1">同樣的分析工作，步驟從 7 步縮減至 3 步</p>
+
+    <div class="compare-grid">
+      <div class="compare-card manual fade-up delay-2">
+        <div class="card-header">
+          <div class="card-icon">&#9888;</div>
+          <span class="card-label">人工流程</span>
+        </div>
+        <ol class="step-list">
+          <li><span class="step-num">1</span>開啟 Excel 費用明細，逐欄核對預算 vs 實際</li>
+          <li><span class="step-num">2</span>手動建立各部門預算達成率表格</li>
+          <li><span class="step-num">3</span>比對上月資料，計算月對月變動率</li>
+          <li><span class="step-num">4</span>用 Excel 圖表功能繪製趨勢圖、圓餅圖</li>
+          <li><span class="step-num">5</span>人工檢視異常項目並標記超支 / 閒置</li>
+          <li><span class="step-num">6</span>撰寫文字摘要說明</li>
+          <li><span class="step-num">7</span>手動寄出 Email 給主管</li>
+        </ol>
+      </div>
+
+      <div class="compare-card auto fade-up delay-3">
+        <div class="card-header">
+          <div class="card-icon">&#9889;</div>
+          <span class="card-label">自動化流程</span>
+        </div>
+        <ol class="step-list">
+          <li><span class="step-num">1</span>放入當月 Excel 檔案至指定資料夾</li>
+          <li><span class="step-num">2</span>執行 <code style="color:#69f0ae">python main.py</code></li>
+          <li><span class="step-num">3</span>自動完成全部分析、圖表、AI 摘要、Email</li>
+        </ol>
+        <div style="margin-top:1.5rem; padding:1rem; background:rgba(0,200,83,0.08); border-radius:0.5rem; font-size:0.88rem; color:#a5d6a7;">
+          &#10003; 預算達成分析 &nbsp; &#10003; 月對月趨勢 &nbsp; &#10003; 部門佔比<br>
+          &#10003; 異常標記 &nbsp; &#10003; AI 財務摘要 &nbsp; &#10003; 自動寄信
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">2 / 5</span>
+</section>
+
+<!-- ========== SLIDE 3: Time Comparison ========== -->
+<section class="slide" id="slide-3">
+  <div class="slide-inner">
+    <h2 class="slide-title fade-up">時間成本 <span class="highlight">精簡</span></h2>
+    <p class="slide-subtitle fade-up delay-1">各階段耗時對比 — 自動化節省超過 90% 時間</p>
+
+    <table class="time-table fade-up delay-2">
+      <thead>
+        <tr>
+          <th>作業項目</th>
+          <th>人工耗時</th>
+          <th>自動化耗時</th>
+          <th>節省</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>資料讀取 & 整理</td>
+          <td class="bar-cell"><div class="bar manual-bar" style="width:70%">30 分鐘</div></td>
+          <td class="bar-cell"><div class="bar auto-bar" style="width:8%">3 秒</div></td>
+          <td class="time-val saved">99.8%</td>
+        </tr>
+        <tr>
+          <td>預算達成分析</td>
+          <td class="bar-cell"><div class="bar manual-bar" style="width:50%">20 分鐘</div></td>
+          <td class="bar-cell"><div class="bar auto-bar" style="width:5%">2 秒</div></td>
+          <td class="time-val saved">99.8%</td>
+        </tr>
+        <tr>
+          <td>月對月趨勢</td>
+          <td class="bar-cell"><div class="bar manual-bar" style="width:60%">25 分鐘</div></td>
+          <td class="bar-cell"><div class="bar auto-bar" style="width:5%">2 秒</div></td>
+          <td class="time-val saved">99.9%</td>
+        </tr>
+        <tr>
+          <td>圖表製作</td>
+          <td class="bar-cell"><div class="bar manual-bar" style="width:85%">40 分鐘</div></td>
+          <td class="bar-cell"><div class="bar auto-bar" style="width:10%">5 秒</div></td>
+          <td class="time-val saved">99.8%</td>
+        </tr>
+        <tr>
+          <td>AI 摘要撰寫</td>
+          <td class="bar-cell"><div class="bar manual-bar" style="width:45%">20 分鐘</div></td>
+          <td class="bar-cell"><div class="bar auto-bar" style="width:15%">10 秒</div></td>
+          <td class="time-val saved">99.2%</td>
+        </tr>
+        <tr>
+          <td>Email 寄送</td>
+          <td class="bar-cell"><div class="bar manual-bar" style="width:25%">10 分鐘</div></td>
+          <td class="bar-cell"><div class="bar auto-bar" style="width:5%">2 秒</div></td>
+          <td class="time-val saved">99.7%</td>
+        </tr>
+        <tr style="font-weight:700;">
+          <td style="color:#fff;">合計</td>
+          <td class="bar-cell"><div class="bar manual-bar" style="width:100%">~2.5 小時</div></td>
+          <td class="bar-cell"><div class="bar auto-bar" style="width:8%">~25 秒</div></td>
+          <td class="time-val saved">99.7%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <span class="slide-num">3 / 5</span>
+</section>
+
+<!-- ========== SLIDE 4: Benefits ========== -->
+<section class="slide" id="slide-4">
+  <div class="slide-inner">
+    <h2 class="slide-title fade-up">效益 <span class="highlight">總覽</span></h2>
+    <p class="slide-subtitle fade-up delay-1">不只省時間，更提升分析品質與一致性</p>
+
+    <div class="kpi-row fade-up delay-2">
+      <div class="kpi-card">
+        <div class="kpi-value green">99.7%</div>
+        <div class="kpi-label">時間節省</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value blue">5 部門</div>
+        <div class="kpi-label">一次完整涵蓋</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value pink">0 錯誤</div>
+        <div class="kpi-label">消除人為計算失誤</div>
+      </div>
+    </div>
+
+    <div class="benefit-list fade-up delay-3">
+      <div class="benefit-item">
+        <span class="benefit-icon" style="color:#69f0ae;">&#9679;</span>
+        <div><strong>一致性</strong><br>每月報表格式統一，異常閾值標準化（超支 >20%、月變動 >30%）</div>
+      </div>
+      <div class="benefit-item">
+        <span class="benefit-icon" style="color:#4facfe;">&#9679;</span>
+        <div><strong>互動式圖表</strong><br>Plotly 產出趨勢線、圓餅圖、堆疊長條圖、熱力圖，取代靜態 Excel</div>
+      </div>
+      <div class="benefit-item">
+        <span class="benefit-icon" style="color:#f093fb;">&#9679;</span>
+        <div><strong>AI 智慧摘要</strong><br>Claude API 自動生成財務分析文字，聚焦關鍵異常</div>
+      </div>
+      <div class="benefit-item">
+        <span class="benefit-icon" style="color:#ffd740;">&#9679;</span>
+        <div><strong>自動通知</strong><br>分析完成自動寄送 Email，附帶 Excel + HTML 報表</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">4 / 5</span>
+</section>
+
+<!-- ========== SLIDE 5: Architecture & CTA ========== -->
+<section class="slide cta-slide" id="slide-5">
+  <div class="slide-inner">
+    <h2 class="slide-title fade-up">系統架構 & <span class="highlight">立即使用</span></h2>
+    <p class="slide-subtitle fade-up delay-1">Python 驅動的端到端自動化分析管線</p>
+
+    <div class="arch-flow fade-up delay-2">
+      <div class="arch-node">Excel 費用明細</div>
+      <span class="arch-arrow">&#8594;</span>
+      <div class="arch-node">Data Loader</div>
+      <span class="arch-arrow">&#8594;</span>
+      <div class="arch-node">Budget / MoM / Dept 分析</div>
+      <span class="arch-arrow">&#8594;</span>
+      <div class="arch-node">Claude AI 摘要</div>
+      <span class="arch-arrow">&#8594;</span>
+      <div class="arch-node">Excel + HTML 報表</div>
+      <span class="arch-arrow">&#8594;</span>
+      <div class="arch-node">Email 寄送</div>
+    </div>
+
+    <div class="cta-cmd fade-up delay-3">
+      <span class="prompt">$</span> python main.py --month 202603 --no-email
+    </div>
+
+    <p class="fade-up delay-4" style="color:var(--text-muted); font-size:0.9rem; margin-top:1rem;">
+      一行指令，25 秒完成過去 2.5 小時的工作
+    </p>
+  </div>
+  <span class="slide-num">5 / 5</span>
+</section>
+
+<!-- ===== Scroll Animation Script ===== -->
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
