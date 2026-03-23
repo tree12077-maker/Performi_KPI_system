@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hailey Huang｜QA 數位轉型工程師</title>
+<style>
+    :root{
+      --bg:#0b1220;
+      --panel:#121a2b;
+      --panel-2:#172033;
+      --text:#e8eefc;
+      --muted:#a7b4d0;
+      --line:#26314a;
+      --accent:#66d9ef;
+      --accent-2:#7ee787;
+      --tag:#23304a;
+      --shadow:0 18px 40px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Segoe UI","Noto Sans TC",Arial,sans-serif;
+      background: linear-gradient(180deg,#08101d 0%,#0b1220 100%);
+      color:var(--text);
+      line-height:1.7;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:32px 20px 60px;}
+    .hero{
+      display:grid;
+      grid-template-columns: 1.45fr .95fr;
+      gap:22px;
+      align-items:stretch;
+    }
+    .panel{
+      background:rgba(18,26,43,.92);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:28px;
+      backdrop-filter: blur(8px);
+    }
+    .title{
+      font-size:38px;
+      line-height:1.2;
+      font-weight:800;
+      letter-spacing:.4px;
+      margin:0 0 6px;
+    }
+    .subtitle{
+      color:var(--accent);
+      font-size:18px;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    
+    .hero-slogan{
+      margin-top:10px;
+      margin-bottom:14px;
+      color:#d9f7ff;
+      font-size:18px;
+      line-height:1.5;
+      font-weight:700;
+      letter-spacing:.2px;
+      max-width:560px;
+    }
+
+    .summary{
+      color:var(--muted);
+      margin-top:14px;
+      font-size:16px;
+    }
+    .meta{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px 18px;
+      margin-top:18px;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .pill{
+      display:inline-block;
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(102,217,239,.12);
+      color:var(--accent);
+      border:1px solid rgba(102,217,239,.22);
+      font-size:13px;
+      font-weight:700;
+      margin:6px 8px 0 0;
+    }
+    .impact{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+      margin-top:16px;
+    }
+    .impact .box{
+      background:var(--panel-2);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+    }
+    .impact .num{
+      font-size:28px;
+      font-weight:800;
+      color:var(--accent-2);
+      line-height:1.1;
+    }
+    .impact .txt{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:6px;
+    }
+    h2{
+      margin:34px 0 16px;
+      font-size:22px;
+      letter-spacing:.2px;
+    }
+    .grid-2{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:22px;
+    }
+    .skills-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:18px;
+    }
+    .skill-card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:22px;
+      box-shadow:var(--shadow);
+      height:100%;
+    }
+
+    .section-title{
+      font-size:20px;
+      font-weight:800;
+      margin:0 0 14px;
+      color:#ffffff;
+    }
+    .timeline-item{
+      position:relative;
+      padding:0 0 20px 20px;
+      border-left:2px solid #2d3956;
+      margin-left:8px;
+    }
+    .timeline-item:last-child{padding-bottom:4px}
+    .timeline-item::before{
+      content:"";
+      position:absolute;
+      left:-7px; top:7px;
+      width:12px;height:12px;border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 0 4px rgba(102,217,239,.12);
+    }
+    .time{
+      color:var(--accent);
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:4px;
+    }
+    .role{
+      font-size:18px;
+      font-weight:800;
+      margin:0;
+    }
+    .company{
+      color:#d6e2ff;
+      margin:2px 0 8px;
+      font-weight:600;
+    }
+    .desc{
+      color:var(--muted);
+      margin:0;
+      padding-left:18px;
+    }
+    .desc li{margin:5px 0}
+    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;}
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+    .card h3{
+      margin:0 0 8px;
+      font-size:18px;
+    }
+    .tech{
+      color:var(--accent);
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+    .card ul{
+      margin:10px 0 0;
+      padding-left:18px;
+      color:var(--muted);
+    }
+    .tag{
+      display:inline-block;
+      background:var(--tag);
+      color:#dfe8ff;
+      border:1px solid #324362;
+      padding:6px 10px;
+      border-radius:10px;
+      margin:0 8px 8px 0;
+      font-size:13px;
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    
+    .competency-group{
+      margin-top:18px;
+    }
+    .mini-title{
+      font-size:15px;
+      font-weight:800;
+      margin:0 0 10px;
+      letter-spacing:.2px;
+    }
+    .mini-title.blue{color:#66d9ef;}
+    .mini-title.green{color:#7ee787;}
+    .competency-list{
+      margin:0;
+      padding-left:18px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+    .competency-list li{
+      margin:6px 0;
+    }
+    .tool-tags{
+      margin-top:8px;
+    }
+
+    
+    .highlight-box{
+      margin-top:18px;
+      background:var(--panel-2);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+    }
+    .highlight-title{
+      font-size:15px;
+      font-weight:800;
+      color:#ffffff;
+      margin:0 0 8px;
+    }
+    .highlight-list{
+      margin:0;
+      padding-left:18px;
+      color:var(--muted);
+      line-height:1.7;
+      font-size:14px;
+    }
+    .highlight-list li{
+      margin:6px 0;
+    }
+
+    
+    .skills-grid-4{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
+      align-items:start;
+    }
+    .skill-card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:22px;
+      box-shadow:var(--shadow);
+      height:100%;
+    }
+    .skill-card + .skill-card{margin-top:0;}
+
+    .footer{
+      color:#7f8db0;
+      text-align:center;
+      margin-top:34px;
+      font-size:13px;
+    }
+    @media (max-width: 860px){
+      .hero,.grid-2,.cards,.skills-grid,.skills-grid-4{grid-template-columns:1fr}
+      .impact{grid-template-columns:1fr 1fr}
+      .title{font-size:30px}
+    }
+    @media (max-width: 520px){
+      .meta,.impact{grid-template-columns:1fr}
+      .wrap{padding:20px 14px 40px}
+      .panel,.card{padding:20px}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+<section class="hero">
+<div class="panel">
+<div class="title">Hailey Huang 黃芝穎</div>
+<div class="subtitle">Digital Transformation Engineer｜品質系統 × 數據分析 × 自動化</div><div class="hero-slogan">Transforming Quality into Scalable, Data-Driven Decisions with AI &amp; Automation</div>
+<div>
+<span class="pill">EV Charger Industry</span>
+<span class="pill">Global Quality Assurance</span>
+<span class="pill">Power BI / SharePoint / Power Automate / Python</span>
+</div>
+<div class="meta">
+<div>📍 Tainan, Taiwan</div>
+<div>📧 tree12077@gmail.com</div>
+<div>📞 +886 0929-961-207</div>
+<div>Digital Transformation | Data Analytics | Process Optimization</div>
+</div>
+<div class="impact">
+<div class="box">
+<div class="num">80%</div>
+<div class="txt">報表與追蹤流程人工作業降低</div>
+</div>
+<div class="box">
+<div class="num">90%</div>
+<div class="txt">特定分析與報表處理效率提升</div>
+</div>
+<div class="box">
+<div class="num">3 座工廠</div>
+<div class="txt">Power BI 與品質數據看板跨廠導入</div>
+</div>
+<div class="box">
+<div class="num">跨國協作</div>
+<div class="txt">支援台灣、日本、美國客戶與多站點運作</div>
+</div>
+</div><div class="highlight-box"><div class="highlight-title">職涯亮點</div><ul class="highlight-list"><li>主導跨廠品質數據整合與 Power BI 看板建置，提升管理透明度與決策速度。</li><li>結合 Power Automate、SharePoint 與 Python，推動 QA 流程自動化與報表標準化。</li><li>具備品質系統、營運分析與 AI 應用整合能力，可同時連結現場需求與數位工具落地。</li></ul></div>
+</div>
+<div class="panel"><div class="section-title">核心能力</div><div class="competency-group"><div class="mini-title blue">Business &amp; Strategy</div><ul class="competency-list"><li>Data-driven Decision Making</li><li>KPI System Design &amp; Performance Management</li><li>Cost Optimization &amp; Financial Analysis</li><li>Operational Data Analysis</li><li>Cross-functional Collaboration</li><li>Quality Audit Support (ISO 9001 / IATF 16949)</li></ul></div><div class="competency-group"><div class="mini-title green">System &amp; Digital Execution</div><ul class="competency-list"><li>Project &amp; System Implementation</li><li>Process Automation &amp; Workflow Optimization</li><li>Dashboard Strategy (Power BI)</li><li>Cross-site Data Integration</li><li>AI Workflow Design &amp; Automation</li><li>AI-driven Reporting &amp; Insight Generation</li><li>Automation Architecture (Power Automate / Python)</li></ul></div><h2 style="margin-top:22px;">語言與證照</h2><div><span class="tag">中文｜母語</span><span class="tag">英文｜工作溝通（TOEIC 730）</span><span class="tag">VDA 6.3 內部稽核員</span><span class="tag">QC080000 綠色產品管理</span><span class="tag">ISO 9001 / IATF 16949</span></div><h2 style="margin-top:22px;">AI / Tools</h2><div class="tool-tags"><span class="tag">ChatGPT / Claude</span><span class="tag">Power BI</span><span class="tag">Power Automate</span><span class="tag">SharePoint</span><span class="tag">Python</span><span class="tag">OpenPyXL</span></div></div>
+</section>
+<h2>工作經歷</h2>
+<section class="grid-2">
+<div class="panel">
+<div class="timeline-item">
+<div class="time">2023 / 07 – Present</div>
+<h3 class="role">Digital Transformation Engineer, Global Quality Assurance Unit</h3>
+<div class="company">📍 Tainan, Taiwan</div>
+<ul class="desc">
+<li>導入 Power BI 品質看板至 3 座工廠，提升報表即時性與管理透明度。</li>
+<li>建立 FPYR、Failure Rate、Complaint 等自動化儀表板與即時追蹤機制。</li>
+<li>與 IT、工程、現場單位協作，建置異常追蹤與改善流程。</li>
+<li>整合每月 KPI、預算與成本資料，支援費用控管與營運規劃。</li>
+<li>支援內外部稽核與品質系統運作，熟悉 ISO 9001 / IATF 16949。</li>
+<li>赴日本據點主導 QC 教學與品質系統導入，強化海外品質流程標準化與管理能力。</li>
+</ul>
+</div>
+<div class="timeline-item">
+<div class="time">2020 / 11 – 2021 / 01</div>
+<h3 class="role">Executive Assistant to Director</h3>
+<div class="company">San Yi Biotechnology Inc.｜台北</div>
+<ul class="desc">
+<li>支援新產品導入時程與銷售預估協調。</li>
+<li>整理每月財務資料，協助高階主管決策。</li>
+</ul>
+</div>
+<div class="timeline-item">
+<div class="time">2019 / 11 – 2020 / 10</div>
+<h3 class="role">Overseas Sales Specialist</h3>
+<div class="company">Advance Factory Limited｜台北</div>
+<ul class="desc"><li>協調海外工廠生產排程與國際客戶客製化需求溝通，確保交期與產品規格符合客戶要求。</li><li>分析並整合製造成本與交付風險數據，支援業務決策與客戶管理策略優化。</li></ul>
+</div>
+</div>
+<div class="panel">
+<div class="section-title">學歷</div>
+<div class="timeline-item">
+<div class="time">2021 / 02 – 2023 / 02</div>
+<h3 class="role">財務金融碩士</h3>
+<div class="company">國立雲林科技大學｜GPA: 3.32 / 4.0</div>
+</div>
+<div class="timeline-item">
+<div class="time">2015 / 09 – 2019 / 06</div>
+<h3 class="role">國際商務學系（輔修：應用英語）</h3>
+<div class="company">義守大學</div>
+</div>
+<div class="timeline-item">
+<div class="time">2019 / 01 – 2019 / 07</div>
+<h3 class="role">交換學生｜國際貿易系</h3>
+<div class="company">南京大學，中國</div>
+</div>
+</div>
+</section>
+<h2>代表專案</h2>
+<section class="cards">
+<div class="card">
+<h3>QA Dashboard 與 KPI 自動化系統</h3>
+<div class="tech">Power BI｜SharePoint｜Power Automate｜Base44</div>
+<ul>
+<li>建立跨廠 FPYR 與 KPI 即時監控系統，提升現場與管理層可視化。</li>
+<li>整合多站點資料來源，標準化 KPI 計算與報表規則。</li>
+<li>顯著降低手動彙整與追蹤時間，支援更快的決策節奏。</li>
+</ul>
+<p><a href="https://tree12077-maker.github.io/Performi_KPI_system/index.html" target="_blank">查看專案</a></p>
+</div>
+<div class="card">
+<h3>客訴風險評分系統</h3>
+<div class="tech">SharePoint｜Power Automate｜JSON｜Lists｜Power BI</div>
+<ul>
+<li>設計 RPN 風險模型（數量 × 嚴重度 × 客戶權重）。</li>
+<li>自動化案件分級、通知與升級流程，加快高風險案件反應。</li>
+<li>提升客訴管理一致性與可追蹤性。</li>
+</ul>
+<p><a href="https://tree12077-maker.github.io/Performi_KPI_system/customer_complaint.html" target="_blank">查看專案</a></p>
+</div>
+<div class="card">
+<h3>自動化生產報表解析系統（PDF → Data）</h3>
+<div class="tech">Python｜OpenPyXL</div>
+<ul>
+<li>將週報 PDF 自動轉為結構化資料，減少人工輸入。</li>
+<li>動態計算 IQC / IPQC / OQC 人力需求，提升分析效率。</li>
+<li>讓製造與品質分析更快進入決策階段。</li>
+</ul>
+<p><a href="https://tree12077-maker.github.io/Performi_KPI_system/manpower.html" target="_blank">查看專案</a></p>
+</div>
+<div class="card">
+<h3>品質成本分析與報告自動化系統</h3>
+<div class="tech">Python｜OpenPyXL｜Plotly｜Automation｜Claude API</div>
+<ul>
+<li>建置 Excel → 資料處理 → 分析 → 報告輸出 → 郵件寄送流程。</li>
+<li>支援預算達成、月對月趨勢、部門成本分布等分析。</li>
+<li>整合 AI 生成財務洞察，提升管理層閱讀效率與決策品質。</li>
+</ul>
+<p><a href="https://tree12077-maker.github.io/Performi_KPI_system/cost_analysis.html" target="_blank">查看專案</a></p>
+</div>
+</section>
+<h2>技能總覽</h2>
+<section class="skills-grid-4"><div class="skill-card"><div class="section-title">Data &amp; BI</div><div><span class="tag">Power BI</span><span class="tag">Dashboarding</span><span class="tag">Excel Automation</span><span class="tag">Data Modeling</span><span class="tag">KPI Tracking</span><span class="tag">Cost Analysis</span></div></div><div class="skill-card"><div class="section-title">Automation &amp; Systems</div><div><span class="tag">Power Automate</span><span class="tag">SharePoint</span><span class="tag">Microsoft Lists</span><span class="tag">Planner</span><span class="tag">Workflow Orchestration</span><span class="tag">Adaptive Cards</span></div></div><div class="skill-card"><div class="section-title">Programming</div><div><span class="tag">Python</span><span class="tag">OpenPyXL</span><span class="tag">Basic React / Node.js</span></div><div class="section-title" style="margin-top:18px;">Quality</div><div><span class="tag">ISO 9001</span><span class="tag">IATF 16949</span><span class="tag">VDA 6.3</span></div></div><div class="skill-card"><div class="section-title">加值特色</div><div><span class="tag">Cross-site Execution</span><span class="tag">Audit Support</span><span class="tag">Bilingual Coordination</span><span class="tag">Business Acumen</span><span class="tag">Finance Background</span></div></div></section>
+<div class="footer">
+      © 2026 Hailey Huang｜QA Digital Transformation Portfolio
+    </div>
+</div>
+</body>
+</html>
